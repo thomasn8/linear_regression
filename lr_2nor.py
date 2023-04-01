@@ -17,7 +17,7 @@ def parse_csv_file(filename):
 	normalization = False
 	for row in datas_ori:
 		for value in row:
-			if value > 100:
+			if value > 1000:
 				normalization = True
 
 	X_ori = []
@@ -40,7 +40,7 @@ def parse_csv_file(filename):
 		
 	y_pred = [0.] * n
 
-	return datas_ori, X_ori, y_ori, datas, X, y, y_pred, n
+	return normalization, datas_ori, X_ori, y_ori, datas, X, y, y_pred, n
 
 
 def check_parsing(datas_ori, X_ori, y_ori, points, X, y, y_pred, n):
@@ -59,7 +59,7 @@ def check_parsing(datas_ori, X_ori, y_ori, points, X, y, y_pred, n):
 
 
 def gradient_descent(csv_file, lr=0.001, iter=1500):
-	datas_ori, X_ori, y_ori, points, X, y, y_pred, n = parse_csv_file(csv_file)
+	norma, datas_ori, X_ori, y_ori, points, X, y, y_pred, n = parse_csv_file(csv_file)
 	# check_parsing(datas_ori, X_ori, y_ori, points, X, y, y_pred, n)
 
 	w = 0.
@@ -89,13 +89,17 @@ def gradient_descent(csv_file, lr=0.001, iter=1500):
 			print(f"Iteration {_}: bias={b}, weight={w}")
 
 		# DENORMALIZER DATAS ?
+		# if norma === True:
+			#  denoraliser w et b
+			# scatter X_ori y_ori
 
 	## visualization
 	# plt.scatter(X, y, color = "b", marker = "o", s = 30)
 	plt.scatter(X, y, color="black")
-	# plt.scatter(X_ori, y_ori, color="black")
-	plt.plot(list(range(20, 80)), [w * x + b for x in range(20, 80)], color="red") # draw line with w/b 
-	# plt.plot(list(range(0, 2)), [w * x + b for x in range(0, 2)], color="red") # draw line with w/b 
+	if lr < 0.001:
+		plt.plot(list(range(20, 80)), [w * x + b for x in range(20, 80)], color="red") # draw line with w/b 
+	else:
+		plt.plot(list(range(0, 2)), [w * x + b for x in range(0, 2)], color="red") # draw line with w/b 
 	plt.show()
 
 	return b, w
