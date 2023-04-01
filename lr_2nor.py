@@ -2,6 +2,12 @@ import matplotlib.pyplot as plt
 import csv
 from utils import min_max_normalization
 
+# 1 Faire fonctionner la denormalization
+# 2 Faire marcher la visualization
+# 3 Optimiser le code et la partie parsing
+# 4 Faire passer la partie mandatory
+# 5 Adapter pour que l'algo fonctionne avec des datas complexes, > 1 weight
+
 def parse_csv_file(filename):
 	with open(filename, 'r') as f:
 		reader = csv.reader(f)
@@ -37,13 +43,7 @@ def parse_csv_file(filename):
 	return datas_ori, X_ori, y_ori, datas, X, y, y_pred, n
 
 
-def gradient_descent(csv_file, lr=0.001, iter=1500):
-	datas_ori, X_ori, y_ori, points, X, y, y_pred, n = parse_csv_file(csv_file)
-
-	## visualization
-	# plt.scatter(X, y, color = "b", marker = "o", s = 30)
-	# plt.show()
-
+def check_parsing(datas_ori, X_ori, y_ori, points, X, y, y_pred, n):
 	## check if parsing worked:
 	# print('\npoints:',points)
 	# print(type(points[0][0]))
@@ -55,6 +55,12 @@ def gradient_descent(csv_file, lr=0.001, iter=1500):
 	# print('\nn:',n)
 	# print('\nn_x:',n_x)
 	# print('\ndw:',dw)
+	return
+
+
+def gradient_descent(csv_file, lr=0.001, iter=1500):
+	datas_ori, X_ori, y_ori, points, X, y, y_pred, n = parse_csv_file(csv_file)
+	# check_parsing(datas_ori, X_ori, y_ori, points, X, y, y_pred, n)
 
 	w = 0.
 	b = 0.
@@ -85,6 +91,7 @@ def gradient_descent(csv_file, lr=0.001, iter=1500):
 		# DENORMALIZER DATAS ?
 
 	## visualization
+	# plt.scatter(X, y, color = "b", marker = "o", s = 30)
 	plt.scatter(X, y, color="black")
 	# plt.scatter(X_ori, y_ori, color="black")
 	plt.plot(list(range(20, 80)), [w * x + b for x in range(20, 80)], color="red") # draw line with w/b 
