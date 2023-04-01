@@ -11,7 +11,7 @@ def parse_csv_file(filename):
 	normalization = False
 	for row in datas_ori:
 		for value in row:
-			if value > 1000:
+			if value > 100:
 				normalization = True
 
 	X_ori = []
