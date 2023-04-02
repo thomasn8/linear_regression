@@ -1,5 +1,5 @@
 ## TO DO: finish the visualization and MSE
-## IMPROVES: add a better standardization/normalization? and the possibility to ponderate the weights
+## IMPROVES: add a better standardization?/normalization? and the possibility to ponderate the features-weights
 
 import csv, copy, math
 import matplotlib.pyplot as plt
