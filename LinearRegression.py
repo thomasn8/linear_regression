@@ -15,6 +15,7 @@ class LinearRegression:
 		self.b = None
 		self.w = None
 		self.trained = False
+		self.mse = None
 
 
 	def readCsvFile(self):
@@ -114,7 +115,7 @@ class LinearRegression:
 
 		return y_pred
 		
-
+	## Cost function that minimizes progressively the measures of the divergence between the predicted and actual values
 	def gradientDescent(self, X, y, divider):
 		n = self.n
 		lr = self.lr
@@ -144,6 +145,7 @@ class LinearRegression:
 				db += error
 
 			## update bias and weights substracting the mean_error (= gradients/n_values) multiplied by the learning rate
+			## the learning rate helps to move slowly in the right direction
 			## should progressively reach a plateau (if the learning is well calibrated with the num of iteration)
 			w = w - (lr * (-2/n) * dw)	# use 1 instead of 2 for compliance with formulas of 42 subj
 			b = b - (lr * (-2/n) * db)	# use 1 instead of 2 for compliance with formulas of 42 subj
@@ -153,36 +155,27 @@ class LinearRegression:
 					print("TRAINING THE MODEL:")
 				print(f"	Iter. {_}: bias= {b}, weight= {w/divider}")
 		
-		return (w/divider), b
+		self.w = w/divider
+		self.b = b
+		self.trained = True
+		print(f'MODEL TRAINED\n	Results: bias = {self.b}, weight = {self.w}')
+
+	## Evaluate the accuracy of the model by measuring the goodness of fit determined by the variance
+	def meanSquaredError(self):
+		sum_error = 0
+		for i in range(self.n):
+			y_pred = self.X[i] * self.w + self.b
+			error = self.y[i] - y_pred
+			sum_error += (error)**2
+		mean_error = sum_error/self.n
+		self.mse = mean_error
+		print(f'	Precision: MSE = {round(self.mse, 2)}')
 
 
 	def fit(self, csv_file, lr=0.001, iter=10000, visualize=False):
 		self.parseDatas(csv_file, lr, iter, visualize)
 		X, y, divider = self.scaleDatas()
-		self.w, self.b = self.gradientDescent(X, y, divider)
-		self.trained = True
-		print(f'MODEL TRAINED\n	Results: bias = {self.b}, weight = {self.w}')
+		self.gradientDescent(X, y, divider)
+		self.meanSquaredError()
 		self.visualization()
 		return self.w, self.b
-
-
-## calculate the MSE [Mean Squared Errors] (= precision or loss) 
-
-# def loss_function(b, w, points):
-# 	y_pred = [0.] * len(points)		# a list of n points to put the predicted values for each point
-
-# 	j = 0							# index of the raw (or point) we are in
-# 	for point in points:
-# 		sum_error = 0
-# 		yj = point[-1] # actual y value
-# 		x = point[:-1] # all the x values
-# 		wx = 0
-# 		for i in range(len(x)):				# for each x
-# 			wx += x[i] * w[i]				# dot products (produit scalaire) of each weight with the corrsponding x value
-# 		y_pred[j] = wx + b					# get the predicted_value in list corresponding to each point
-# 		error = yj - y_pred[j]				# error = actual_value - predicted_value
-# 		sum_error += (error)**2				# add to sum of the squared errors
-# 		j+=1
-	
-# 	mean_error = sum_error/float(len(points))	# divide the sum by the num of point to get the mean squared error
-# 	return mean_error
