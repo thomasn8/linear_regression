@@ -74,7 +74,9 @@ class LinearRegression:
 		if self.visualize == True: 
 			Xmin = 0
 			Xmax = int(max(self.X))
+			# take all the points of X-y
 			plt.scatter(self.X, self.y, color="black", marker = "o", s = 30)
+			# make the line with respect to w and b learned
 			plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="red")
 			plt.show()
 
@@ -82,10 +84,36 @@ class LinearRegression:
 	def predict(self, x, w, b):
 		if not self.trained:
 			raise Exception("train model before using it")
-		y = w*x + b
-		print('Predicted value:', y)
-		return w*x + b
-	
+		y_pred = w*x + b
+		print('Predicted value for', x, ':', y_pred)
+		return y_pred
+
+
+	def predictAndShow(self, x, w, b):
+		if not self.trained:
+			raise Exception("train model before using it")
+		
+		y_pred = w*x + b
+		print(f'Predicted value for {x}: {y_pred}. You can see it on the graph.')
+
+		# take all the learned points
+		plt.scatter(self.X, self.y, color="black", marker = "o", s = 30)
+		
+		# take the predicted point
+		plt.scatter(x, y_pred, color="blue", marker = "o", s = 30)
+
+		# define the graph limit for the X axis
+		Xmin = 0
+		Xmax = int(max(self.X))
+		if x > Xmax:
+			Xmax = x
+
+		# make the line with respect to w and b learned
+		plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="red")
+		plt.show()
+
+		return y_pred
+		
 
 	def gradientDescent(self, X, y, divider):
 		n = self.n
@@ -119,7 +147,7 @@ class LinearRegression:
 			if _ % (iter/10) == 0:
 				if _ == 0:
 					print("TRAINING THE MODEL:")
-				print(f"	Iter {_}: bias={b}, weight={w/divider}")
+				print(f"	Iter. {_}: bias= {b}, weight= {w/divider}")
 		
 		return (w/divider), b
 
@@ -129,6 +157,29 @@ class LinearRegression:
 		X, y, divider = self.scaleDatas()
 		self.w, self.b = self.gradientDescent(X, y, divider)
 		self.trained = True
+		print(f'MODEL TRAINED\n	Results: bias = {self.b}, weight = {self.w}')
 		self.visualization()
-		print(f'bias = {self.b}, weight = {self.w}')
 		return self.w, self.b
+
+# arrondire valeur predited
+
+
+## calculate the loss (the mean squared errors) manually 
+# def loss_function(b, w, points):
+# 	y_pred = [0.] * len(points)		# a list of n points to put the predicted values for each point
+
+# 	j = 0							# index of the raw (or point) we are in
+# 	for point in points:
+# 		sum_error = 0
+# 		yj = point[-1] # actual y value
+# 		x = point[:-1] # all the x values
+# 		wx = 0
+# 		for i in range(len(x)):				# for each x
+# 			wx += x[i] * w[i]				# dot products (produit scalaire) of each weight with the corrsponding x value
+# 		y_pred[j] = wx + b					# get the predicted_value in list corresponding to each point
+# 		error = yj - y_pred[j]				# error = actual_value - predicted_value
+# 		sum_error += (error)**2				# add to sum of the squared errors
+# 		j+=1
+	
+# 	mean_error = sum_error/float(len(points))	# divide the sum by the num of point to get the mean squared error
+# 	return mean_error
