@@ -1,6 +1,4 @@
 ## TO DO
-## 1 Faire fonctionner la denormalization
-## 2 Faire marcher la visualization
 ## 3 Optimiser le code et la partie parsing
 ## 4 Faire passer la partie mandatory
 ## 5 Adapter pour que l'algo fonctionne avec des datas complexes, > 1 weight
@@ -32,11 +30,10 @@ def parse_csv_file(filename):
 	return datas, X, y, y_pred, n
 
 
-def gradient_descent(csv_file, lr=0.001, iter=1500):
+def gradient_descent(csv_file, lr=0.001, iter=1500, visualize=False):
 	points, X, y, y_pred, n = parse_csv_file(csv_file)
 	
-
-	## Normalization
+	## SCALE X VALUES
 	X_original = copy.deepcopy(X)
 	y_original = copy.deepcopy(y)
 	divider = calculate_scale_value(X)
@@ -67,46 +64,29 @@ def gradient_descent(csv_file, lr=0.001, iter=1500):
 		b = b - (lr * db)
 
 		if _ % (iter/10) == 0:
-			print(f"Iteration {_}: bias={b}, weight={w}")
+			print(f"Iteration {_}: bias={b}, weight={w/divider}")
 
-	## Denormalization
-	# plt.scatter(X, y, color="black", marker = "o", s = 30)
-	# plt.plot(list(range(0, 1)), [w * x + b for x in range(0, 1)], color="red") #  youtube.csv
-	# plt.show()
-	# w_denormalized = denormalize_value(w, min_values[0], max_values[0])
-	# b_denormalized = denormalize_value(b, min_values[1], max_values[1])
-	# return b_denormalized, w_denormalized, X_original, y_original
+	## VISUALIZATION
+	if visualize == True: 
+		Xmin = 0
+		# Xmin = int(min(X_original))
+		Xmax = int(max(X_original))
+		plt.scatter(X_original, y_original, color="black", marker = "o", s = 30)
+		plt.plot(list(range(Xmin, Xmax)), [(w/divider) * x + b for x in range(Xmin, Xmax)], color="red")
+		plt.show()
 
 	return b, (w/divider), X_original, y_original
 
 
+## TESTS
+visu = False
 
+file = 'student.csv'
+b, w, X, y = gradient_descent(file, lr=0.0001, iter=1000, visualize=visu)
+print('student.csv: ', 'bias = ', b, 'weight = ', w)
 
-## normalization alone 					OK
-## gradient descent alone 				OK
-## gradient descent + normalization 	ERROR: probably in denormalization
+# print()
 
-print('\n1st data set: youtube.csv')
-file = 'youtube.csv'
-b, w, X, y = gradient_descent(file, lr=0.0001, iter=1000)
-print(b, w)
-plt.scatter(X, y, color="black", marker = "o", s = 30)
-plt.plot(list(range(20, 80)), [w * x + b for x in range(20, 80)], color="red") #  youtube.csv
-plt.show()
-
-
-
-
-
-
-## normalization alone					OK
-## gradient descent alone				ERROR: points are too big so we quickly get 'nan' values
-## gradient descent + normalization		ERROR:
-
-# print('\n2nd data set: data.csv')
-# file = 'data.csv'
-# b, w, X, y = gradient_descent(file, lr=0.1, iter=1000)
-# print(b, w)
-# plt.scatter(X, y, color="black", marker = "o", s = 30)
-# plt.plot(list(range(0, 250000)), [w * x + b for x in range(0, 250000)], color="red") # data.csv
-# plt.show()
+file = 'data.csv'
+b, w, X, y = gradient_descent(file, lr=0.01, iter=10000, visualize=visu)
+print('data.csv: ', 'bias = ', b, 'weight = ', w)

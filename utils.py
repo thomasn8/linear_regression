@@ -9,7 +9,6 @@ def read_csv_file(filename):
 	return data
 
 
-
 # VISUALIZATION OF DATAS
 import matplotlib.pyplot as plt
 
@@ -23,10 +22,7 @@ def show_graph(dataset):
 	plt.show()
 
 
-
-# NORMALIZE DATAS
-import copy
-import numpy as np
+# SCALE DATAS
 import math
 
 def calculate_scale_value(X):
@@ -46,12 +42,3 @@ def simple_scaling(X, scaler):
 	for i in range(len(X)):
 		X[i] /= scaler;
 	return X
-
-def min_max_normalize(dataset):
-    dataset = np.array(dataset)
-    # Get the minimum and maximum values for each column
-    min_values = dataset.min(axis=0)
-    max_values = dataset.max(axis=0)
-    # Normalize each column using min-max normalization
-    normalized_dataset = (dataset - min_values) / (max_values - min_values)
-    return normalized_dataset, min_values, max_values
