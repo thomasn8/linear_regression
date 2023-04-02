@@ -129,20 +129,24 @@ class LinearRegression:
 			dw = 0. 
 			db = 0.
 
+			## for each point in the dataset
 			for i in range(n):
-				## prediction
+				## try to predict the y value based on the learned (at the actual iteration) corresponding weight(s) and overall bias
 				x = X[i]
 				wx = x * w
 				y_pred[i] = wx + b
 
-				## error (gradient)
+				## calculate the gradients (or derivatives):
+				## error = diff between the known value and the predicted value
+				## sum all the errors to get the w and b gradients
 				error = y[i] - y_pred[i]
-				dw += -(2/n) * X[i] * error
-				db += -(2/n) * error
+				dw += X[i] * error
+				db += error
 
-			## update bias and weights
-			w = w - (lr * dw)
-			b = b - (lr * db)
+			## update bias and weights substracting the mean_error (= gradients/n_values) multiplied by the learning rate
+			## should progressively reach a plateau (if the learning is well calibrated with the num of iteration)
+			w = w - (lr * (-2/n) * dw)	# use 1 instead of 2 for compliance with formulas of 42 subj
+			b = b - (lr * (-2/n) * db)	# use 1 instead of 2 for compliance with formulas of 42 subj
 
 			if _ % (iter/10) == 0:
 				if _ == 0:
@@ -162,7 +166,8 @@ class LinearRegression:
 		return self.w, self.b
 
 
-## calculate the loss (the mean squared errors) manually 
+## calculate the MSE [Mean Squared Errors] (= precision or loss) 
+
 # def loss_function(b, w, points):
 # 	y_pred = [0.] * len(points)		# a list of n points to put the predicted values for each point
 

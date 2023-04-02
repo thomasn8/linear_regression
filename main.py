@@ -16,8 +16,8 @@ def main():
 	mileage = 999999
 	reg.predict(mileage, w, b)
 
-	# mileage = 55555
-	# reg.predictAndShow(mileage, w, b)
+	mileage = 55555
+	reg.predictAndShow(mileage, w, b)
 
 
 if __name__ == "__main__":
