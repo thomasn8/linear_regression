@@ -14,6 +14,7 @@ class LinearRegression:
 		self.n = None
 		self.b = None
 		self.w = None
+		self.trained = False
 
 
 	def readCsvFile(self):
@@ -79,6 +80,10 @@ class LinearRegression:
 
 
 	def predict(self, x, w, b):
+		if not self.trained:
+			raise Exception("train model before using it")
+		y = w*x + b
+		print('Predicted value:', y)
 		return w*x + b
 	
 
@@ -112,7 +117,9 @@ class LinearRegression:
 			b = b - (lr * db)
 
 			if _ % (iter/10) == 0:
-				print(f"Iter {_}: bias={b}, weight={w/divider}")
+				if _ == 0:
+					print("TRAINING THE MODEL:")
+				print(f"	Iter {_}: bias={b}, weight={w/divider}")
 		
 		return (w/divider), b
 
@@ -121,10 +128,7 @@ class LinearRegression:
 		self.parseDatas(csv_file, lr, iter, visualize)
 		X, y, divider = self.scaleDatas()
 		self.w, self.b = self.gradientDescent(X, y, divider)
+		self.trained = True
 		self.visualization()
+		print(f'bias = {self.b}, weight = {self.w}')
 		return self.w, self.b
-
-
-reg = LinearRegression()
-w, b = reg.fit('datas/data.csv', lr=0.01, iter=10000, visualize=True)
-print('bias = ', b, 'weight = ', w, '\n')
