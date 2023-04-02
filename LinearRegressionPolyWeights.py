@@ -61,13 +61,6 @@ class LinearRegression:
 		self.visualize = visualize
 		self.b = 0.
 		self.points, self.X, self.y, self.y_pred, self.w, self.n, self.n_x, self.errors = self.readCsvFile()
-		# print('\npoints',self.points)
-		# print('\nX',self.X)
-		# print('\ny',self.y)
-		# print('\ny_pred',self.y_pred)
-		# print('\nw',self.w)
-		# print('\nn',self.n)
-		# print('\nn_x',self.n_x)
 
 
 	def calculateScaleValue(self, X):
@@ -100,55 +93,60 @@ class LinearRegression:
 		return X, y, dividers
 	
 
-	def visualization(self):
-		if self.visualize == True: 
-			Xmin = 0
-			Xmax = int(max(self.X))
+	# def visualization(self):
+	# 	if self.visualize == True: 
+	# 		Xmin = 0
+	# 		Xmax = int(max(self.X))
 
-			# take all the points of X-y
-			plt.scatter(self.X, self.y, color="blue", marker = "o", s = 30)
+	# 		# take all the points of X-y
+	# 		plt.scatter(self.X, self.y, color="blue", marker = "o", s = 30)
 			
-			# make the line with respect to w and b learned
-			plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="black")
-			plt.show()
+	# 		# make the line with respect to w and b learned
+	# 		plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="black")
+	# 		plt.show()
 
 
-	def predict(self, x, decimal=2):
-		if not self.trained:
-			raise Exception("train model before using it")
-		y_pred = self.w*x + self.b
-		print('Predicted value for', x, ':', round(y_pred, decimal))
-		return y_pred
-
-
-	def predictVisualize(self, x, decimal=2):
+	def predict(self, *args, decimal=2):
 		if not self.trained:
 			raise Exception("train model before using it")
 		
-		y_pred = self.w*x + self.b
-		print(f'Predicted value for {x}: {round(y_pred, decimal)}. You can see it on the graph.')
-
-		# take all the learned points
-		plt.scatter(self.X, self.y, color="blue", marker = "o", s = 30)
-		
-		# take the predicted point
-		plt.scatter(x, y_pred, color="red", marker = "o", s = 30)
-
-		# define the graph limit for the X axis
-		Xmin = 0
-		Xmax = int(max(self.X))
-		if x > Xmax:
-			Xmax = x
-
-		# make the line with respect to w and b learned
-		plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="black")
-		plt.show()
-
+		y_pred = 0
+		for i in range(self.n_x):
+			y_pred += args[i] * self.w[i]
+		y_pred += self.b
+		print('Predicted value :', round(y_pred, decimal))
 		return y_pred
+
+
+	# def predictVisualize(self, x, decimal=2):
+	# 	if not self.trained:
+	# 		raise Exception("train model before using it")
+		
+	# 	y_pred = self.w*x + self.b
+	# 	print(f'Predicted value for {x}: {round(y_pred, decimal)}. You can see it on the graph.')
+
+	# 	# take all the learned points
+	# 	plt.scatter(self.X, self.y, color="blue", marker = "o", s = 30)
+		
+	# 	# take the predicted point
+	# 	plt.scatter(x, y_pred, color="red", marker = "o", s = 30)
+
+	# 	# define the graph limit for the X axis
+	# 	Xmin = 0
+	# 	Xmax = int(max(self.X))
+	# 	if x > Xmax:
+	# 		Xmax = x
+
+	# 	# make the line with respect to w and b learned
+	# 	plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="black")
+	# 	plt.show()
+
+	# 	return y_pred
 
 
 	def prepareVariables(self):
 		return self.n, self.n_x, self.lr, self.it, self.w, self.b, self.y_pred, self.errors
+
 
 	## Cost function that minimizes progressively the measures of the divergence between her predictions and the actual values
 	def gradientDescent(self, X, y, divider):
@@ -197,22 +195,20 @@ class LinearRegression:
 			print(f'	weight[{i}] = {self.w[i]},')
 
 
-	def meanSquaredError(self):
-		sum_error = 0
-		for i in range(self.n):
-			y_pred = self.X[i] * self.w + self.b
-			error = y_pred - self.y[i]
-			sum_error += (error)**2
-		mean_error = sum_error/self.n
-		self.mse = mean_error
-		print(f'	Precision: MSE = {round(self.mse, 2)}')
+	# def meanSquaredError(self):
+	# 	sum_error = 0
+	# 	for i in range(self.n):
+	# 		y_pred = self.X[i] * self.w + self.b
+	# 		error = y_pred - self.y[i]
+	# 		sum_error += (error)**2
+	# 	mean_error = sum_error/self.n
+	# 	self.mse = mean_error
+	# 	print(f'	Precision: MSE = {round(self.mse, 2)}')
 
 
 	def fit(self, csv_file, lr=0.001, it=10000, visualize=False):
 		self.parseDatas(csv_file, lr, it, visualize)
 		X, y, dividers = self.scaleDatas()
-		# print(X)
-		# print(dividers)
 		self.gradientDescent(X, y, dividers)
 		# self.meanSquaredError()
 		# self.visualization()
