@@ -75,8 +75,10 @@ class LinearRegression:
 		if self.visualize == True: 
 			Xmin = 0
 			Xmax = int(max(self.X))
+
 			# take all the points of X-y
 			plt.scatter(self.X, self.y, color="blue", marker = "o", s = 30)
+			
 			# make the line with respect to w and b learned
 			plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="black")
 			plt.show()
@@ -114,39 +116,33 @@ class LinearRegression:
 		plt.show()
 
 		return y_pred
-		
-	## Cost function that minimizes progressively the measures of the divergence between the predicted and actual values
+
+
+	## Cost function that minimizes progressively the measures of the divergence between her predictions and the actual values
 	def gradientDescent(self, X, y, divider):
 		n = self.n
 		lr = self.lr
 		iter = self.iter
-
 		w = 0.
 		b = 0.
+
 		for _ in range(iter):
 
-			## init gradients
+			## for each point in the dataset
 			dw = 0. 
 			db = 0.
-
-			## for each point in the dataset
 			for i in range(n):
-				## try to predict the y value based on the learned (at the actual iteration) corresponding weight(s) and overall bias
-				x = X[i]
-				y_pred = (w*x) + b
+				## train/predict using learned w and b
+				y_pred = (w*X[i]) + b
 
-				## calculate the gradients (or derivatives):
-				## error = diff between the known value and the predicted value
-				## sum all the errors to get the w and b gradients
+				## calculate the gradients
 				error = y_pred - y[i]
 				dw += X[i] * error
 				db += error
 
-			## update bias and weights substracting the mean_error (= sum_gradients/n_values) multiplied by the learning rate
-			## the learning rate helps to move slowly in the right direction
-			## should progressively reach a plateau (if the learning is well calibrated with the num of iteration)
-			w = w - (lr * (1/n) * dw)	# use 1 instead of 2 for compliance with formulas of 42 subj
-			b = b - (lr * (1/n) * db)	# use 1 instead of 2 for compliance with formulas of 42 subj
+			## update w and b
+			w -= (lr * (1/n) * dw)
+			b -= (lr * (1/n) * db)
 
 			if _ % (iter/10) == 0:
 				if _ == 0:
@@ -158,7 +154,7 @@ class LinearRegression:
 		self.trained = True
 		print(f'MODEL TRAINED\n	Results: bias = {self.b}, weight = {self.w}')
 
-	## Evaluate the accuracy of the model by measuring the goodness of fit determined by the variance
+
 	def meanSquaredError(self):
 		sum_error = 0
 		for i in range(self.n):

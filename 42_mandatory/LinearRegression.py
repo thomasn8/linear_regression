@@ -12,8 +12,10 @@ class LinearRegression:
 		self.mileages = None
 		self.prices = None
 		self.m = None
-		self.theta0 = None
-		self.theta1 = None
+		self.tmp_theta0 = 0.
+		self.tmp_theta1 = 0.
+		self.theta0 = 0.
+		self.theta1 = 0.
 		self.trained = False
 		self.precision = None
 
@@ -82,6 +84,9 @@ class LinearRegression:
 			plt.show()
 
 
+	def estimate(self, mileage):
+		return self.tmp_theta1*mileage + self.tmp_theta0
+
 	def estimatePrice(self, mileage, decimal=2):
 		if not self.trained:
 			raise Exception("train model before using it")
@@ -114,26 +119,22 @@ class LinearRegression:
 		plt.show()
 
 		return y_pred
-		
-	## Cost function that minimizes progressively the measures of the divergence between the predicted and actual values
+
+
+	## Cost function that minimizes progressively the measures of the divergence between her predictions and the actual values
 	def gradientDescent(self, X, y, divider):
 		m = self.m
 		learningRate = self.learningRate
 		iter = self.iter
 
-		tmp_theta0 = 0.
-		tmp_theta1 = 0.
 		for _ in range(iter):
 
-			## init gradients
-			dw = 0. 
-			db = 0.
-
 			## for each point in the dataset
+			dw = 0.
+			db = 0.
 			for i in range(m):
 				## try to predict the y value based on the learned (at the actual iteration) corresponding weight(s) and overall bias
-				x = X[i]
-				y_pred = (tmp_theta1*x) + tmp_theta0
+				y_pred = self.estimate(X[i])
 
 				## calculate the gradients (or derivatives):
 				## error = diff between the known value and the predicted value
@@ -145,18 +146,19 @@ class LinearRegression:
 			## update bias and weights substracting the mean_error (= sum_derivatives/n_values) multiplied by the learning rate
 			## the learning rate helps to move slowly in the right direction
 			## should progressively reach a plateau (if the learning is well calibrated with the num of iteration)
-			tmp_theta0 = tmp_theta0 - (learningRate * (1/m) * db)
-			tmp_theta1 = tmp_theta1 - (learningRate * (1/m) * dw)
+			self.tmp_theta0 -= learningRate * (1/m) * db
+			self.tmp_theta1 -= learningRate * (1/m) * dw
 
 			if _ % (iter/10) == 0:
 				if _ == 0:
 					print("TRAINING THE MODEL:")
-				print(f"	Iter. {_}: theta0= {tmp_theta0}, theta1= {tmp_theta1/divider}")
+				print(f"	Iter. {_}: theta0= {self.tmp_theta0}, theta1= {self.tmp_theta1/divider}")
 		
-		self.theta0 = tmp_theta0
-		self.theta1 = tmp_theta1/divider
+		self.theta0 = self.tmp_theta0
+		self.theta1 = self.tmp_theta1/divider
 		self.trained = True
 		print(f'MODEL TRAINED\n	Results: theta0 = {self.theta0}, theta1 = {self.theta1}')
+
 
 	## Evaluate the accuracy of the model by measuring the goodness of fit determined by the variance
 	def meanSquaredError(self):
