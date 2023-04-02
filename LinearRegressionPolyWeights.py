@@ -5,12 +5,15 @@ class LinearRegression:
 
 	def __init__(self):
 		self.lr = None
-		self.iter = None
+		self.it = None
 		self.visualize = None
 		self.csv_file = None
 		self.points = None
 		self.X = None
+		self.n_x = None
 		self.y = None
+		self.y_pred = None
+		self.errors = None
 		self.n = None
 		self.b = None
 		self.w = None
@@ -22,25 +25,49 @@ class LinearRegression:
 		with open(self.csv_file, 'r') as f:
 			reader = csv.reader(f)
 			next(reader)  # skip header
-			dataset = [[float(row[0]), float(row[1])] for row in reader]
-		if len(dataset) < 1:
+			
+			dataset = []	# all points [ [[x], [x], ... [x], [y]], ... ]
+			X = []			# X lists [ [x1], [x2], ... [xn] ]
+			y = []			# y list [y, ...]
+			n = 0
+			for row in reader:
+				n+=1
+				dataset.append([])					# prepare data point lists
+				y.append(float(row[-1]))			# add y values to the y list
+				for data in row:
+					dataset[n-1].append(float(data)) # add data points
+
+				if n == 1:
+					n_x = len(row)-1				# number of features (also weights)
+					for _ in range(n_x):
+						X.append([])				# prepare X lists
+					w = [0.] * n_x					# create and init weights
+				rawX = row[:-1]
+				for x in range(len(rawX)):
+					X[x].append(float(rawX[x]))		# add x values to their list grouped by colomn index
+
+		if n == 0:
 			raise Exception("csv_file error")
 		else:
-			return dataset
+			y_pred = [0.] * n						# to put the predicted values for each y
+			errors = [0.] * n						# to put the diffs between y[i] y_pred[i]
+			return dataset, X, y, y_pred, w, n, n_x, errors
 
 
-	def parseDatas(self, csv_file, lr, iter, visualize):
+	def parseDatas(self, csv_file, lr, it, visualize):
 		self.csv_file = csv_file
 		self.lr = lr
-		self.iter = iter
+		self.it = it
 		self.visualize = visualize
-		self.points = self.readCsvFile()
-		self.n = len(self.points)
-		self.X = []
-		self.y = []
-		for row in self.points:
-			self.X.append(row[0])
-			self.y.append(row[1])
+		self.b = 0.
+		self.points, self.X, self.y, self.y_pred, self.w, self.n, self.n_x, self.errors = self.readCsvFile()
+		# print('\npoints',self.points)
+		# print('\nX',self.X)
+		# print('\ny',self.y)
+		# print('\ny_pred',self.y_pred)
+		# print('\nw',self.w)
+		# print('\nn',self.n)
+		# print('\nn_x',self.n_x)
 
 
 	def calculateScaleValue(self, X):
@@ -66,9 +93,11 @@ class LinearRegression:
 	def scaleDatas(self):
 		X = copy.deepcopy(self.X)
 		y = copy.deepcopy(self.y)
-		divider = self.calculateScaleValue(X)
-		X = self.simpleScaling(X, divider)
-		return X, y, divider
+		dividers = [0.] * self.n_x
+		for i in range(self.n_x):
+			dividers[i] = self.calculateScaleValue(X[i])
+			X[i] = self.simpleScaling(X[i], dividers[i])
+		return X, y, dividers
 	
 
 	def visualization(self):
@@ -118,41 +147,54 @@ class LinearRegression:
 		return y_pred
 
 
+	def prepareVariables(self):
+		return self.n, self.n_x, self.lr, self.it, self.w, self.b, self.y_pred, self.errors
+
 	## Cost function that minimizes progressively the measures of the divergence between her predictions and the actual values
 	def gradientDescent(self, X, y, divider):
-		n = self.n
-		lr = self.lr
-		iter = self.iter
-		w = 0.
-		b = 0.
+		n, n_x, lr, it, w, b, y_pred, errors = self.prepareVariables()
 
-		for _ in range(iter):
+		for _ in range(it):
 
 			## for each point in the dataset
-			dw = 0. 
 			db = 0.
-			for i in range(n):
-				## train/predict using learned w and b
-				y_pred = (w*X[i]) + b
+			dw = [0.] * n_x
+			for j in range(n):
+				## train/predict using learned weights and b
+				row_wxi = 0
+				for i in range(n_x):
+					row_wxi += w[i] * X[i][j] # raw_sum of the x[i] * weight[i]
+				y_pred[j] = row_wxi + b
 
 				## calculate the gradients
-				error = y_pred - y[i]
-				dw += X[i] * error
-				db += error
+				errors[j] = y_pred[j] - y[j]
+				db += errors[j]
+				for i in range(n_x):
+					dw[i] += X[i][j] * errors[j]
 
-			## update w and b
-			w -= (lr * (1/n) * dw)
+			## update b and wi
 			b -= (lr * (1/n) * db)
+			for i in range(n_x):
+				w[i] -= (lr * (1/n) * dw[i])
 
-			if _ % (iter/10) == 0:
+			## display b and wi progression
+			if _ % (it/10) == 0:
 				if _ == 0:
 					print("TRAINING THE MODEL:")
-				print(f"	Iter. {_}: bias = {b}, weight = {w/divider}")
+				print(f"Iter. {_}:")
+				print(f"	bias = {b},")
+				for i in range(n_x):
+					print(f"	weight[{i}] = {w[i]/divider[i]},")
 		
-		self.w = w/divider
+		## save and display final values
 		self.b = b
+		for i in range(n_x):
+			self.w[i] = w[i]/divider[i]
 		self.trained = True
-		print(f'MODEL TRAINED\n	Results: bias = {self.b}, weight = {self.w}')
+		print(f'\nMODEL TRAINED - Results:')
+		print(f'	bias = {self.b},')
+		for i in range(n_x):
+			print(f'	weight[{i}] = {self.w[i]},')
 
 
 	def meanSquaredError(self):
@@ -166,9 +208,11 @@ class LinearRegression:
 		print(f'	Precision: MSE = {round(self.mse, 2)}')
 
 
-	def fit(self, csv_file, lr=0.001, iter=10000, visualize=False):
-		self.parseDatas(csv_file, lr, iter, visualize)
-		X, y, divider = self.scaleDatas()
-		self.gradientDescent(X, y, divider)
-		self.meanSquaredError()
-		self.visualization()
+	def fit(self, csv_file, lr=0.001, it=10000, visualize=False):
+		self.parseDatas(csv_file, lr, it, visualize)
+		X, y, dividers = self.scaleDatas()
+		# print(X)
+		# print(dividers)
+		self.gradientDescent(X, y, dividers)
+		# self.meanSquaredError()
+		# self.visualization()

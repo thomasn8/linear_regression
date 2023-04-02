@@ -70,17 +70,6 @@ def gradient_descent(csv_file, lr=0.001, iter=1500):
 	plt.scatter(X[0], y, color = "b", marker = "o", s = 30)
 	plt.show()
 
-	## check if parsing worked:
-	# print('\npoints:',points)
-	# print(type(points[0][0]))
-	# print('\nX:',X)
-	# print('\ny:',y)
-	# print('\ny_pred:',y_pred)
-	# print('\nw:',w)
-	# print('\nb:',b)
-	# print('\nn:',n)
-	# print('\nn_x:',n_x)
-	# print('\ndw:',dw)
 
 	for _ in range(iter):
 

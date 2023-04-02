@@ -16,10 +16,12 @@ class LinearRegression:
 		self.weights = np.zeros(n_features)
 		self.bias = 0
 
-		for _ in range(self.n_iters):
+		# for _ in range(self.n_iters):
+		for _ in range(1):
 			y_pred = np.dot(X, self.weights) + self.bias
 
 			dw = (1/n_samples) * np.dot(X.T, (y_pred-y))
+			print(dw)
 			db = (1/n_samples) * np.sum(y_pred-y)
 
 			self.weights = self.weights - self.lr * dw
