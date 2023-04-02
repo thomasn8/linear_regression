@@ -8,9 +8,10 @@
 
 import csv
 import copy
-from utils import min_max_normalize, denormalize_value
+from utils import *
 import matplotlib.pyplot as plt
 
+from sklearn.preprocessing import StandardScaler
 
 def parse_csv_file(filename):
 	with open(filename, 'r') as f:
@@ -36,12 +37,10 @@ def gradient_descent(csv_file, lr=0.001, iter=1500):
 	
 
 	## Normalization
-	# X_original = copy.deepcopy(X)
-	# y_original = copy.deepcopy(y)
-	# normalized_points, min_values, max_values = min_max_normalize(points) # original min max values : [x_min y_min] [x_max y_max]
-	# X = normalized_points[:, 0]
-	# y = normalized_points[:, 1]
-
+	X_original = copy.deepcopy(X)
+	y_original = copy.deepcopy(y)
+	divider = calculate_scale_value(X)
+	X = simple_scaling(X, divider)
 
 	w = 0.
 	b = 0.
@@ -70,8 +69,6 @@ def gradient_descent(csv_file, lr=0.001, iter=1500):
 		if _ % (iter/10) == 0:
 			print(f"Iteration {_}: bias={b}, weight={w}")
 
-	return b, w, X, y
-
 	## Denormalization
 	# plt.scatter(X, y, color="black", marker = "o", s = 30)
 	# plt.plot(list(range(0, 1)), [w * x + b for x in range(0, 1)], color="red") #  youtube.csv
@@ -79,6 +76,8 @@ def gradient_descent(csv_file, lr=0.001, iter=1500):
 	# w_denormalized = denormalize_value(w, min_values[0], max_values[0])
 	# b_denormalized = denormalize_value(b, min_values[1], max_values[1])
 	# return b_denormalized, w_denormalized, X_original, y_original
+
+	return b, (w/divider), X_original, y_original
 
 
 
@@ -104,10 +103,10 @@ plt.show()
 ## gradient descent alone				ERROR: points are too big so we quickly get 'nan' values
 ## gradient descent + normalization		ERROR:
 
-print('\n2nd data set: data.csv')
-file = 'data.csv'
-b, w, X, y = gradient_descent(file, lr=0.1, iter=1000)
-print(b, w)
-plt.scatter(X, y, color="black", marker = "o", s = 30)
-plt.plot(list(range(0, 10000)), [w * x + b for x in range(0, 10000)], color="red") # data.csv
-plt.show()
+# print('\n2nd data set: data.csv')
+# file = 'data.csv'
+# b, w, X, y = gradient_descent(file, lr=0.1, iter=1000)
+# print(b, w)
+# plt.scatter(X, y, color="black", marker = "o", s = 30)
+# plt.plot(list(range(0, 250000)), [w * x + b for x in range(0, 250000)], color="red") # data.csv
+# plt.show()
