@@ -9,8 +9,6 @@ import copy
 from utils import *
 import matplotlib.pyplot as plt
 
-from sklearn.preprocessing import StandardScaler
-
 def parse_csv_file(filename):
 	with open(filename, 'r') as f:
 		reader = csv.reader(f)
@@ -75,18 +73,16 @@ def gradient_descent(csv_file, lr=0.001, iter=1500, visualize=False):
 		plt.plot(list(range(Xmin, Xmax)), [(w/divider) * x + b for x in range(Xmin, Xmax)], color="red")
 		plt.show()
 
-	return b, (w/divider), X_original, y_original
+	return b, (w/divider)
 
 
 ## TESTS
-visu = False
+visu = True
 
-file = 'student.csv'
-b, w, X, y = gradient_descent(file, lr=0.0001, iter=1000, visualize=visu)
-print('student.csv: ', 'bias = ', b, 'weight = ', w)
+file = 'datas/student.csv'
+b, w = gradient_descent(file, lr=0.0001, iter=1000, visualize=visu)
+print(f'{file}: ', 'bias = ', b, 'weight = ', w, '\n')
 
-# print()
-
-file = 'data.csv'
-b, w, X, y = gradient_descent(file, lr=0.01, iter=10000, visualize=visu)
-print('data.csv: ', 'bias = ', b, 'weight = ', w)
+file = 'datas/data.csv'
+b, w = gradient_descent(file, lr=0.01, iter=10000, visualize=visu)
+print(f'{file}: ', 'bias = ', b, 'weight = ', w, '\n')

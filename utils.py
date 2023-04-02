@@ -9,19 +9,6 @@ def read_csv_file(filename):
 	return data
 
 
-# VISUALIZATION OF DATAS
-import matplotlib.pyplot as plt
-
-def show_graph(dataset):
-	X = []
-	Y = []
-	for row in dataset:
-		X.append(row[0])
-		Y.append(row[1])
-	plt.scatter(X, Y, color = "b", marker = "o", s = 30)
-	plt.show()
-
-
 # SCALE DATAS
 import math
 
@@ -42,3 +29,16 @@ def simple_scaling(X, scaler):
 	for i in range(len(X)):
 		X[i] /= scaler;
 	return X
+
+
+# VISUALIZE DATAS
+import matplotlib.pyplot as plt
+
+def show_graph(dataset):
+	X = []
+	Y = []
+	for row in dataset:
+		X.append(row[0])
+		Y.append(row[1])
+	plt.scatter(X, Y, color = "b", marker = "o", s = 30)
+	plt.show()
