@@ -81,20 +81,20 @@ class LinearRegression:
 			plt.show()
 
 
-	def predict(self, x, w, b):
+	def predict(self, x, w, b, precision=2):
 		if not self.trained:
 			raise Exception("train model before using it")
 		y_pred = w*x + b
-		print('Predicted value for', x, ':', y_pred)
+		print('Predicted value for', x, ':', round(y_pred, precision))
 		return y_pred
 
 
-	def predictAndShow(self, x, w, b):
+	def predictAndShow(self, x, w, b, precision=2):
 		if not self.trained:
 			raise Exception("train model before using it")
 		
 		y_pred = w*x + b
-		print(f'Predicted value for {x}: {y_pred}. You can see it on the graph.')
+		print(f'Predicted value for {x}: {round(y_pred, precision)}. You can see it on the graph.')
 
 		# take all the learned points
 		plt.scatter(self.X, self.y, color="black", marker = "o", s = 30)
@@ -160,8 +160,6 @@ class LinearRegression:
 		print(f'MODEL TRAINED\n	Results: bias = {self.b}, weight = {self.w}')
 		self.visualization()
 		return self.w, self.b
-
-# arrondire valeur predited
 
 
 ## calculate the loss (the mean squared errors) manually 
