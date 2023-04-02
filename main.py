@@ -1,23 +1,25 @@
 from LinearRegression import LinearRegression
 
+## visualization can be set in the fit method and by using the predictAndShow method
 def main():
 	reg = LinearRegression()
-	w, b = reg.fit('datas/data.csv', lr=0.01, iter=10000, visualize=False)
+	reg.fit('datas/data.csv', lr=0.01, iter=10000, visualize=False)
 	
 	print()
-	mileage = 0
-	reg.predict(mileage, w, b)
-	mileage = 30000
-	reg.predict(mileage, w, b)
-	mileage = -30000
-	reg.predict(mileage, w, b)
-	mileage = 300000
-	reg.predict(mileage, w, b)
-	mileage = 999999
-	reg.predict(mileage, w, b)
 
 	mileage = 55555
-	reg.predictAndShow(mileage, w, b)
+	reg.predictVisualize(mileage)
+
+	mileage = 0
+	reg.predict(mileage)
+	mileage = 30000
+	reg.predict(mileage)
+	mileage = -30000
+	reg.predict(mileage)
+	mileage = 300000
+	reg.predict(mileage)
+	mileage = 999999
+	reg.predict(mileage)
 
 
 if __name__ == "__main__":

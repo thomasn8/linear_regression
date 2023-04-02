@@ -4,18 +4,18 @@ import matplotlib.pyplot as plt
 class LinearRegression:
 
 	def __init__(self):
-		self.lr = None
+		self.learningRate = None
 		self.iter = None
 		self.visualize = None
 		self.csv_file = None
-		self.points = None
-		self.X = None
-		self.y = None
-		self.n = None
-		self.b = None
-		self.w = None
+		self.cars = None
+		self.mileages = None
+		self.prices = None
+		self.m = None
+		self.theta0 = None
+		self.theta1 = None
 		self.trained = False
-		self.mse = None
+		self.precision = None
 
 
 	def readCsvFile(self):
@@ -29,18 +29,18 @@ class LinearRegression:
 			return dataset
 
 
-	def parseDatas(self, csv_file, lr, iter, visualize):
+	def parseDatas(self, csv_file, learningRate, iter, visualize):
 		self.csv_file = csv_file
-		self.lr = lr
+		self.learningRate = learningRate
 		self.iter = iter
 		self.visualize = visualize
-		self.points = self.readCsvFile()
-		self.n = len(self.points)
-		self.X = []
-		self.y = []
-		for row in self.points:
-			self.X.append(row[0])
-			self.y.append(row[1])
+		self.cars = self.readCsvFile()
+		self.m = len(self.cars)
+		self.mileages = []
+		self.prices = []
+		for car in self.cars:
+			self.mileages.append(car[0])
+			self.prices.append(car[1])
 
 
 	def calculateScaleValue(self, X):
@@ -64,8 +64,8 @@ class LinearRegression:
 
 
 	def scaleDatas(self):
-		X = copy.deepcopy(self.X)
-		y = copy.deepcopy(self.y)
+		X = copy.deepcopy(self.mileages)
+		y = copy.deepcopy(self.prices)
 		divider = self.calculateScaleValue(X)
 		X = self.simpleScaling(X, divider)
 		return X, y, divider
@@ -74,55 +74,55 @@ class LinearRegression:
 	def visualization(self):
 		if self.visualize == True: 
 			Xmin = 0
-			Xmax = int(max(self.X))
+			Xmax = int(max(self.mileages))
 			# take all the points of X-y
-			plt.scatter(self.X, self.y, color="blue", marker = "o", s = 30)
+			plt.scatter(self.mileages, self.prices, color="blue", marker = "o", s = 30)
 			# make the line with respect to w and b learned
-			plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="black")
+			plt.plot(list(range(Xmin, Xmax)), [(self.theta1 * x) + self.theta0 for x in range(Xmin, Xmax)], color="black")
 			plt.show()
 
 
-	def predict(self, x, decimal=2):
+	def estimatePrice(self, mileage, decimal=2):
 		if not self.trained:
 			raise Exception("train model before using it")
-		y_pred = self.w*x + self.b
-		print('Predicted value for', x, ':', round(y_pred, decimal))
+		y_pred = self.theta1*mileage + self.theta0
+		print('Predicted value for', mileage, ':', round(y_pred, decimal))
 		return y_pred
 
 
-	def predictVisualize(self, x, decimal=2):
+	def estimatePriceVisualize(self, mileage, decimal=2):
 		if not self.trained:
 			raise Exception("train model before using it")
 		
-		y_pred = self.w*x + self.b
-		print(f'Predicted value for {x}: {round(y_pred, decimal)}. You can see it on the graph.')
+		y_pred = self.theta1*mileage + self.theta0
+		print(f'Predicted value for {mileage}: {round(y_pred, decimal)}. You can see it on the graph.')
 
 		# take all the learned points
-		plt.scatter(self.X, self.y, color="blue", marker = "o", s = 30)
+		plt.scatter(self.mileages, self.prices, color="blue", marker = "o", s = 30)
 		
 		# take the predicted point
-		plt.scatter(x, y_pred, color="red", marker = "o", s = 30)
+		plt.scatter(mileage, y_pred, color="red", marker = "o", s = 30)
 
 		# define the graph limit for the X axis
 		Xmin = 0
-		Xmax = int(max(self.X))
-		if x > Xmax:
-			Xmax = x
+		Xmax = int(max(self.mileages))
+		if mileage > Xmax:
+			Xmax = mileage
 
 		# make the line with respect to w and b learned
-		plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="black")
+		plt.plot(list(range(Xmin, Xmax)), [(self.theta1 * x) + self.theta0 for x in range(Xmin, Xmax)], color="black")
 		plt.show()
 
 		return y_pred
 		
 	## Cost function that minimizes progressively the measures of the divergence between the predicted and actual values
 	def gradientDescent(self, X, y, divider):
-		n = self.n
-		lr = self.lr
+		m = self.m
+		learningRate = self.learningRate
 		iter = self.iter
 
-		w = 0.
-		b = 0.
+		tmp_theta0 = 0.
+		tmp_theta1 = 0.
 		for _ in range(iter):
 
 			## init gradients
@@ -130,48 +130,48 @@ class LinearRegression:
 			db = 0.
 
 			## for each point in the dataset
-			for i in range(n):
+			for i in range(m):
 				## try to predict the y value based on the learned (at the actual iteration) corresponding weight(s) and overall bias
 				x = X[i]
-				y_pred = (w*x) + b
+				y_pred = (tmp_theta1*x) + tmp_theta0
 
 				## calculate the gradients (or derivatives):
 				## error = diff between the known value and the predicted value
 				## sum all the errors to get the w and b gradients
 				error = y_pred - y[i]
-				dw += X[i] * error
 				db += error
+				dw += error * X[i]
 
-			## update bias and weights substracting the mean_error (= sum_gradients/n_values) multiplied by the learning rate
+			## update bias and weights substracting the mean_error (= sum_derivatives/n_values) multiplied by the learning rate
 			## the learning rate helps to move slowly in the right direction
 			## should progressively reach a plateau (if the learning is well calibrated with the num of iteration)
-			w = w - (lr * (1/n) * dw)	# use 1 instead of 2 for compliance with formulas of 42 subj
-			b = b - (lr * (1/n) * db)	# use 1 instead of 2 for compliance with formulas of 42 subj
+			tmp_theta0 = tmp_theta0 - (learningRate * (1/m) * db)
+			tmp_theta1 = tmp_theta1 - (learningRate * (1/m) * dw)
 
 			if _ % (iter/10) == 0:
 				if _ == 0:
 					print("TRAINING THE MODEL:")
-				print(f"	Iter. {_}: bias= {b}, weight= {w/divider}")
+				print(f"	Iter. {_}: theta0= {tmp_theta0}, theta1= {tmp_theta1/divider}")
 		
-		self.w = w/divider
-		self.b = b
+		self.theta0 = tmp_theta0
+		self.theta1 = tmp_theta1/divider
 		self.trained = True
-		print(f'MODEL TRAINED\n	Results: bias = {self.b}, weight = {self.w}')
+		print(f'MODEL TRAINED\n	Results: theta0 = {self.theta0}, theta1 = {self.theta1}')
 
 	## Evaluate the accuracy of the model by measuring the goodness of fit determined by the variance
 	def meanSquaredError(self):
 		sum_error = 0
-		for i in range(self.n):
-			y_pred = self.X[i] * self.w + self.b
-			error = y_pred - self.y[i]
+		for i in range(self.m):
+			y_pred = self.mileages[i] * self.theta1 + self.theta0
+			error = y_pred - self.prices[i]
 			sum_error += (error)**2
-		mean_error = sum_error/self.n
-		self.mse = mean_error
-		print(f'	Precision: MSE = {round(self.mse, 2)}')
+		mean_error = sum_error/self.m
+		self.precision = mean_error
+		print(f'	Precision: MSE = {round(self.precision, 2)}')
 
 
-	def fit(self, csv_file, lr=0.001, iter=10000, visualize=False):
-		self.parseDatas(csv_file, lr, iter, visualize)
+	def fit(self, csv_file, learningRate=0.001, iter=10000, visualize=False):
+		self.parseDatas(csv_file, learningRate, iter, visualize)
 		X, y, divider = self.scaleDatas()
 		self.gradientDescent(X, y, divider)
 		self.meanSquaredError()
