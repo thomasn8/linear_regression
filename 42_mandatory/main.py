@@ -1,15 +1,12 @@
 from LinearRegression import LinearRegression
 
-## visualization can be set in the fit method and by using the estimatePriceVisualize method
+## visualizations can be set in the fit method and by using the estimatePriceVisualize method
 def main():
 	reg = LinearRegression()
-	reg.fit('datas/data.csv', learningRate=0.01, iter=10000, visualize=False)
-	
+	reg.fit('datas/data.csv', learningRate=0.01, iter=10000, visualize=True)
 	print()
-
 	mileage = 55555
 	reg.estimatePriceVisualize(mileage)
-
 	mileage = 0
 	reg.estimatePrice(mileage)
 	mileage = 30000

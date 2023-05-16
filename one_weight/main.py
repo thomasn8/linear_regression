@@ -1,6 +1,6 @@
 from LinearRegression import LinearRegression
 
-## visualization can be set in the fit method and by using the predictAndShow method
+## visualizations can be set in the fit method and by using the predictAndShow method
 def main():
 	reg = LinearRegression()
 	reg.fit('datas/data.csv', lr=0.01, iter=10000, visualize=False)

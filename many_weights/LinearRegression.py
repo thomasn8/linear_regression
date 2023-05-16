@@ -64,6 +64,7 @@ class LinearRegression:
 		self.visualize = visualize
 		self.b = 0.
 		self.points, self.X, self.y, self.y_pred, self.w, self.n, self.n_x, self.errors = self.readCsvFile()
+		print(self.X)
 
 
 	def calculateScaleValue(self, X):
