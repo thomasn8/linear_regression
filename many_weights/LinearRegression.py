@@ -1,5 +1,8 @@
 ## TO DO: finish the visualization
-## IMPROVES: add a better standardization?/normalization? and the possibility to ponderate the features-weights
+## IMPROVES: 
+# add a visualization 
+# add a better standardization?/normalization? 
+# add the possibility to ponderate the features-weights
 
 import csv, copy, math
 import matplotlib.pyplot as plt
@@ -83,7 +86,7 @@ class LinearRegression:
 
 	def simpleScaling(self, X, scaler):
 		for i in range(len(X)):
-			X[i] /= scaler;
+			X[i] /= scaler
 		return X
 
 
@@ -95,19 +98,6 @@ class LinearRegression:
 			dividers[i] = self.calculateScaleValue(X[i])
 			X[i] = self.simpleScaling(X[i], dividers[i])
 		return X, y, dividers
-	
-
-	# def visualization(self):
-	# 	if self.visualize == True: 
-	# 		Xmin = 0
-	# 		Xmax = int(max(self.X))
-
-	# 		# take all the points of X-y
-	# 		plt.scatter(self.X, self.y, color="blue", marker = "o", s = 30)
-			
-	# 		# make the line with respect to w and b learned
-	# 		plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="black")
-	# 		plt.show()
 
 
 	def predict(self, *args, decimal=2):
@@ -120,32 +110,6 @@ class LinearRegression:
 		y_pred += self.b
 		print('Predicted value :', round(y_pred, decimal))
 		return y_pred
-
-
-	# def predictVisualize(self, x, decimal=2):
-	# 	if not self.trained:
-	# 		raise Exception("train model before using it")
-		
-	# 	y_pred = self.w*x + self.b
-	# 	print(f'Predicted value for {x}: {round(y_pred, decimal)}. You can see it on the graph.')
-
-	# 	# take all the learned points
-	# 	plt.scatter(self.X, self.y, color="blue", marker = "o", s = 30)
-		
-	# 	# take the predicted point
-	# 	plt.scatter(x, y_pred, color="red", marker = "o", s = 30)
-
-	# 	# define the graph limit for the X axis
-	# 	Xmin = 0
-	# 	Xmax = int(max(self.X))
-	# 	if x > Xmax:
-	# 		Xmax = x
-
-	# 	# make the line with respect to w and b learned
-	# 	plt.plot(list(range(Xmin, Xmax)), [(self.w * x) + self.b for x in range(Xmin, Xmax)], color="black")
-	# 	plt.show()
-
-	# 	return y_pred
 
 
 	def prepareVariables(self):

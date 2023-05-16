@@ -59,7 +59,7 @@ class LinearRegression:
 
 	def simpleScaling(self, X, scaler):
 		for i in range(len(X)):
-			X[i] /= scaler;
+			X[i] /= scaler
 		return X
 
 
