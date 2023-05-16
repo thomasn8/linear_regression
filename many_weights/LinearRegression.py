@@ -1,4 +1,4 @@
-## TO DO: finish the visualization and MSE
+## TO DO: finish the visualization
 ## IMPROVES: add a better standardization?/normalization? and the possibility to ponderate the features-weights
 
 import csv, copy, math
@@ -30,20 +30,20 @@ class LinearRegression:
 			next(reader)  # skip header
 			
 			dataset = []	# all points [ [[x], [x], ... [x], [y]], ... ]
-			X = []			# X lists [ [x1], [x2], ... [xn] ]
-			y = []			# y list [y, ...]
+			X = []				# X lists [ [x1], [x2], ... [xn] ]
+			y = []				# y list [y, ...]
 			n = 0
 			for row in reader:
 				n+=1
 				dataset.append([])					# prepare data point lists
-				y.append(float(row[-1]))			# add y values to the y list
+				y.append(float(row[-1]))		# add y values to the y list
 				for data in row:
 					dataset[n-1].append(float(data)) # add data points
 
 				if n == 1:
 					n_x = len(row)-1				# number of features (also weights)
 					for _ in range(n_x):
-						X.append([])				# prepare X lists
+						X.append([])					# prepare X lists
 					w = [0.] * n_x					# create and init weights
 				rawX = row[:-1]
 				for x in range(len(rawX)):
@@ -198,20 +198,23 @@ class LinearRegression:
 			print(f'	weight[{i}] = {self.w[i]},')
 
 
-	# def meanSquaredError(self):
-	# 	sum_error = 0
-	# 	for i in range(self.n):
-	# 		y_pred = self.X[i] * self.w + self.b
-	# 		error = y_pred - self.y[i]
-	# 		sum_error += (error)**2
-	# 	mean_error = sum_error/self.n
-	# 	self.mse = mean_error
-	# 	print(f'	Precision: MSE = {round(self.mse, 2)}')
+	def meanSquaredError(self):
+		sum_error = 0
+		for j in range(self.n):
+			row_wxi = 0
+			for i in range(self.n_x):
+				row_wxi += self.w[i] * self.X[i][j]
+			y_pred = row_wxi + self.b
+			error = y_pred - self.y[j]
+			sum_error += (error)**2
+		mean_error = sum_error/self.n
+		self.mse = mean_error
+		print(f'	Precision: MSE = {round(self.mse, 2)}')
 
 
 	def fit(self, csv_file, lr=0.001, it=10000, visualize=False):
 		self.parseDatas(csv_file, lr, it, visualize)
 		X, y, dividers = self.scaleDatas()
 		self.gradientDescent(X, y, dividers)
-		# self.meanSquaredError()
+		self.meanSquaredError()
 		# self.visualization()

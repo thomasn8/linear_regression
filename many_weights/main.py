@@ -24,6 +24,9 @@ def main():
 	years = 15
 	mileage = 30000
 	reg.predict(years, mileage)
+	years = 15
+	mileage = 310000
+	reg.predict(years, mileage)
 
 
 if __name__ == "__main__":
